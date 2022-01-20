@@ -1,11 +1,24 @@
 view: simple_names {
-  sql_table_name: `anthony-billet.test_data.simple_names`
-    ;;
+  derived_table: {
+    sql: SELECT full_name_table.name as name ,annotation, timestamp
+              FROM `anthony-billet.test_data.simple_names` as full_name_table
+              INNER JOIN ( SELECT name,  MAX(timestamp) as max_ts
+              FROM `anthony-billet.test_data.simple_names`
+              GROUP BY 1) as name_ts
+              ON full_name_table.name = name_ts.name AND max_ts = timestamp ;;
+  }
+  # sql_table_name: `anthony-billet.test_data.simple_names`
+  #   ;;
 
-  dimension: cool_name {
-    label: "Cool Name?"
-    type: yesno
-    sql: ${TABLE}.Cool_Name_ ;;
+  dimension: annotation {
+    type: string
+    sql: ${TABLE}.annotation ;;
+  }
+
+  dimension_group: timestamp {
+    type: time
+    datatype: datetime
+    sql: ${TABLE}.timestamp ;;
   }
 
   dimension: name {
